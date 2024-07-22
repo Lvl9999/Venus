@@ -1,7 +1,7 @@
 # Example:
 ```lua
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Lvl9999/Venus/main/BackUp",true))();
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Lvl9999/Venus/main/Backup",true))();
 
 local main = library:Load({Name = "Venus Library", Theme = "Dark", SizeX = 440, SizeY = 480, ColorOverrides = {}})
 local aimbot = main:Tab("Aimbot")

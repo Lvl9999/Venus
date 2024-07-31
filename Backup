@@ -356,44 +356,35 @@ function library:Load(opts)
             Parent = tab
         })
         
-        local column1 = utility.create("ScrollingFrame", {
-            Size = UDim2.new(0.5, -3, 1, 0),
-            BackgroundTransparency = 1,
-            Active = true,
-            ScrollBarThickness = 0,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Parent = tab
-        })
-
-        local column1list = utility.create("UIListLayout", {
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 6),
-            Parent = column1
-        })
-
-        column1list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            column1.CanvasSize = UDim2.new(0, 0, 0, column1list.AbsoluteContentSize.Y)
-        end)
-
-        local column2 = utility.create("ScrollingFrame", {
-            Size = UDim2.new(0.5, -3, 1, 0),
-            BackgroundTransparency = 1,
-            Active = true,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            ScrollBarThickness = 0,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Parent = tab
-        })
-
-        local column2list = utility.create("UIListLayout", {
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 6),
-            Parent = column2
-        })
-
-        column2list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            column2.CanvasSize = UDim2.new(0, 0, 0, column2list.AbsoluteContentSize.Y)
-        end)
+        local function createColumn(index)
+            local column = utility.create("ScrollingFrame", {
+                Size = UDim2.new(1/10, -3, 1, 0),
+                Position = UDim2.new((index-1)/10, 0, 0, 0),
+                BackgroundTransparency = 1,
+                Active = true,
+                ScrollBarThickness = 0,
+                CanvasSize = UDim2.new(0, 0, 0, 0),
+                Parent = tab
+            })
+        
+            local columnList = utility.create("UIListLayout", {
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 6),
+                Parent = column
+            })
+        
+            columnList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                column.CanvasSize = UDim2.new(0, 0, 0, columnList.AbsoluteContentSize.Y)
+            end)
+        
+            return column
+        end
+        
+        -- Create up to 10 columns
+        local columns = {}
+        for i = 1, 10 do
+            columns[i] = createColumn(i)
+        end
 
         local function toggleTab()
             for i, v in next, tabFrameHolder:GetChildren() do
@@ -440,13 +431,20 @@ function library:Load(opts)
             local options = utility.format_table(opts)
             local name = options.name
             local column = options.column or 1
-            column = column == 1 and column1 or column == 2 and column2
-
+            
+            -- Updated column selection
+            local selectedColumn
+            if column >= 1 and column <= 10 then
+                selectedColumn = _G["column" .. column]
+            else
+                selectedColumn = column1 -- Default to column1 if invalid column number
+            end
+        
             local section = utility.create("Frame", {
                 ZIndex = 5,
                 Size = UDim2.new(1, 0, 0, 24),
                 BackgroundColor3 = theme.Section,
-                Parent = column
+                Parent = selectedColumn
             })
             
             utility.create("UICorner", {
